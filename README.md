@@ -1,5 +1,9 @@
 # tgbook
 
+> 🚀 **一键自动部署**：在 Agent 对话窗口发送下面这句话，Agent 会自动安装 tgbook 并引导你配置：
+>
+> > 请阅读 `agent_setup.md` 文档，按照步骤为我安装并配置 tgbook。
+
 Agent 友好的 Telegram 书库机器人 CLI 工具。通过 Telegram 用户账号（非 Bot Token）与固定的书库机器人交互，支持**搜索图书**和**下载图书**。
 
 ## 项目定位
@@ -109,7 +113,7 @@ tgbook 是一个**非交互式、机器可读优先**的命令行工具，专为
 - **操作系统**：Linux（推荐）、Windows、**macOS**（全平台支持）
 - **网络**：能够访问 Telegram 服务器（可能需要配置代理）
 
-## 部署方式
+## 手动部署
 
 ### 1. 克隆仓库
 
@@ -168,7 +172,7 @@ tgbook --help
 
 ## 初始化教程
 
-> **前置条件**：在开始之前，你需要先完成 [Z-Library Telegram 机器人接入](docs/prerequisites-zlib-telegram.md)，包括创建个人专属 Bot 并与 Z-Library 账号绑定。
+> **前置条件**：在开始之前，你需要先完成 [Z-Library Telegram 机器人接入](docs/prerequisites-zlib-telegram.md)，包括创建个人专属 Bot 并与 Z-Library 账号绑定。也可参阅 [Agent 自动部署指南](agent_setup.md) 将配置过程交由 Agent 引导。
 
 ### 第一步：获取 Telegram API 凭据（api_id 和 api_hash）
 
