@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from kurigram import Client
+from pyrogram import Client
 from pyrogram.errors import FloodWait, RPCError
 
 from tgbook.errors import ErrorCode, TgbookError
