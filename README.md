@@ -2,7 +2,7 @@
 
 > 🚀 **一键自动部署**：在 Agent 对话窗口发送下面这句话，Agent 会自动安装 tgbook 并引导你配置：
 >
-> > 请阅读 `agent_setup.md` 文档，按照步骤为我安装并配置 tgbook。
+> > 请阅读 https://github.com/ouones/tgbook/blob/master/agent_setup.md 文档，按照步骤为我安装并配置 tgbook。
 
 Agent 友好的 Telegram 书库机器人 CLI 工具。通过 Telegram 用户账号（非 Bot Token）与固定的书库机器人交互，支持**搜索图书**和**下载图书**。
 
