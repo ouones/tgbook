@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.session
+config.toml
+data/
+downloads/
+download-index.json
+*.egg-info/
