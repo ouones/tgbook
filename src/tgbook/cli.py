@@ -20,7 +20,10 @@ from tgbook.telegram import KurigramGateway
 
 def emit(value: dict) -> None:
     """Write one JSON object to standard output."""
-    print(json.dumps(value, ensure_ascii=False, separators=(",", ":")), file=sys.stdout)
+    text = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    # Write raw UTF-8 bytes to avoid GBK encoding errors on Windows.
+    sys.stdout.buffer.write((text + "\n").encode("utf-8"))
+    sys.stdout.buffer.flush()
 
 
 def emit_error(error: TgbookError) -> int:

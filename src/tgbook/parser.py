@@ -11,21 +11,24 @@ from collections.abc import Sequence
 
 from tgbook.models import BookResult, ButtonRef
 
-# Matches /book_<opaque-id> (format, human-size) at end of a line
+# Matches /book_<opaque-id> (format, human-size) — bot may append ↗️ suffix
 COMMAND_LINE = re.compile(
-    r"^(?P<command>/book_[A-Za-z0-9_]+)\s*\((?P<format>[^,()]+),\s*(?P<size>[^()]+)\)$",
-    re.MULTILINE,
+    r"(?P<command>/book_[A-Za-z0-9_]+)\s*\((?P<format>[^,()]+),\s*(?P<size>[^()]+)\)",
 )
 
 # Matches the "(N) next »" inline button pattern
 NEXT_BUTTON = re.compile(r"^\(\d+\)\s+next\s+»$", re.IGNORECASE)
 
+# Splits entries at 📚 that starts a line (each line-starting 📚 marks a new book)
+ENTRY_SPLIT = re.compile(r"\n(?=📚 )")
+
 
 def parse_search_page(text: str) -> list[BookResult]:
     """Extract book results from a bot search response.
 
-    For each /book_xxx command, finds the preceding 📚 marker and derives
-    title and author from the text between the marker and the command.
+    Splits text at 📚 markers that start new book entries, then for each
+    block finds the /book_xxx command and derives title/author from the
+    preceding lines.
 
     Args:
         text: The raw text of the bot's search response message.
@@ -34,34 +37,53 @@ def parse_search_page(text: str) -> list[BookResult]:
         List of BookResult, one per /book_xxx command found.
     """
     results: list[BookResult] = []
-    for match in COMMAND_LINE.finditer(text):
-        marker = text.rfind("📚", 0, match.start())
-        if marker < 0:
-            continue
-        # Extract lines between the 📚 marker and the command line
-        lines = [
-            line.strip()
-            for line in text[marker + 1 : match.start()].splitlines()
-            if line.strip()
-        ]
-        title = lines[0].removeprefix("📚  ").strip() if lines else None
+    blocks = ENTRY_SPLIT.split(text)
 
-        # Author is the first remaining line that's not Year/🌐/command
+    for block in blocks:
+        cmd_match = COMMAND_LINE.search(block)
+        if not cmd_match:
+            continue
+
+        # Lines before the command match hold title, author, Year, 🌐
+        prefix = block[: cmd_match.start()]
+        lines = [line.strip() for line in prefix.splitlines() if line.strip()]
+
+        if not lines:
+            continue
+
+        # First line is "📚 <title>"
+        title = lines[0]
+        if title.startswith("📚 "):
+            title = title[2:].strip()
+        elif title == "📚" and len(lines) > 1:
+            title = lines[1]
+
+        # Author is the first remaining line that is not Year, 🌐, command, or
+        # pagination navigation (e.g. "(N) next »")
         author = None
-        for line in lines[1:]:
-            if not line.startswith(("Year:", "🌐", "/book_")):
-                author = line
+        for idx in range(1, len(lines)):
+            line = lines[idx]
+            if line.startswith(("Year:", "🌐", "/book_")):
+                continue
+            # Skip navigation / button markers
+            if re.match(r"^[\(«]", line):
+                continue
+            # If we hit another 📚 entry, stop
+            if line.startswith("📚"):
                 break
+            author = line
+            break
 
         results.append(
             BookResult(
-                command=match["command"],
-                title=title,
-                author=author,
-                format=match["format"].lower(),
-                size=match["size"],
+                command=cmd_match["command"],
+                title=title if title else None,
+                author=author if author else None,
+                format=cmd_match["format"].lower(),
+                size=cmd_match["size"],
             )
         )
+
     return results
 
 

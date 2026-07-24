@@ -45,6 +45,9 @@ class KurigramGateway(BotGateway):
                 "No session file found. Run 'tgbook login' interactively first.",
             )
 
+        # Ensure session directory exists
+        self._config.session_path.parent.mkdir(parents=True, exist_ok=True)
+
         self._client = Client(
             name=self._config.phone,
             api_id=self._config.api_id,
@@ -52,6 +55,7 @@ class KurigramGateway(BotGateway):
             phone_number=self._config.phone,
             workdir=str(self._config.session_path.parent),
             no_updates=True,
+            proxy=self._make_proxy(),
         )
 
         try:
@@ -149,6 +153,30 @@ class KurigramGateway(BotGateway):
             return dest
         except RPCError as exc:
             raise self._map_error(exc)
+
+    def _make_proxy(self) -> dict | None:
+        """Build a pyrogram proxy dict from the config proxy string.
+
+        Supports socks5:// and http:// schemes. Defaults to socks5.
+        Examples: 'socks5://192.168.31.2:7890', 'http://127.0.0.1:8080'
+        """
+        proxy_url = self._config.proxy
+        if not proxy_url:
+            return None
+        from urllib.parse import urlparse
+        parsed = urlparse(proxy_url)
+        scheme = parsed.scheme or "socks5"
+        hostname = parsed.hostname
+        port = parsed.port
+        if not hostname or not port:
+            return None
+        return {
+            "scheme": scheme,
+            "hostname": hostname,
+            "port": port,
+            **({"username": parsed.username, "password": parsed.password}
+               if parsed.username and parsed.password else {}),
+        }
 
     def _convert(self, msg) -> IncomingMessage:
         buttons = None

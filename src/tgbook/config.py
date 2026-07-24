@@ -11,10 +11,16 @@ from tgbook.models import AppConfig
 
 
 def _default_data_root() -> Path:
-    localappdata = os.environ.get("LOCALAPPDATA")
-    if localappdata:
-        return Path(localappdata) / "tgbook"
-    return Path.home() / "AppData" / "Local" / "tgbook"
+    if os.name == "nt":
+        localappdata = os.environ.get("LOCALAPPDATA")
+        if localappdata:
+            return Path(localappdata) / "tgbook"
+        return Path.home() / "AppData" / "Local" / "tgbook"
+    # Linux, macOS, etc.
+    xdg = os.environ.get("XDG_DATA_HOME")
+    if xdg:
+        return Path(xdg) / "tgbook"
+    return Path.home() / ".local" / "share" / "tgbook"
 
 
 def load_config(explicit_path: Path | None = None) -> AppConfig:
@@ -44,6 +50,7 @@ def load_config(explicit_path: Path | None = None) -> AppConfig:
     phone = os.environ.get("TGBOOK_PHONE", raw.get("phone"))
     api_id_str = os.environ.get("TGBOOK_API_ID", str(raw.get("api_id", "")))
     api_hash = os.environ.get("TGBOOK_API_HASH", raw.get("api_hash"))
+    proxy = os.environ.get("TGBOOK_PROXY", raw.get("proxy"))
 
     # Validate required fields
     missing = []
@@ -79,6 +86,7 @@ def load_config(explicit_path: Path | None = None) -> AppConfig:
         phone=str(phone),
         api_id=api_id,
         api_hash=str(api_hash),
+        proxy=str(proxy) if proxy else None,
         config_path=config_path,
         data_root=data_root,
     )

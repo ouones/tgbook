@@ -15,8 +15,9 @@ class AppConfig:
     phone: str
     api_id: int
     api_hash: str
-    config_path: Path | None
-    data_root: Path
+    proxy: str | None = None
+    config_path: Path | None = None
+    data_root: Path = field(default_factory=Path)
 
     @property
     def session_path(self) -> Path:

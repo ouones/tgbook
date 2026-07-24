@@ -69,15 +69,46 @@ def test_missing_config_field_raises(tmp_path):
 
 
 def test_default_data_root_uses_localappdata(tmp_path, monkeypatch):
+    import os as _os
     from tgbook.config import load_config
 
-    localappdata = tmp_path / "AppData" / "Local"
-    localappdata.mkdir(parents=True)
-    monkeypatch.setenv("LOCALAPPDATA", str(localappdata))
+    if _os.name == "nt":
+        localappdata = tmp_path / "AppData" / "Local"
+        localappdata.mkdir(parents=True)
+        monkeypatch.setenv("LOCALAPPDATA", str(localappdata))
+    else:
+        xdg = tmp_path / ".local" / "share"
+        xdg.mkdir(parents=True)
+        monkeypatch.setenv("XDG_DATA_HOME", str(xdg))
 
     config_path = write_config(tmp_path)
 
-    # When no explicit path given and no TGBOOK_CONFIG, default root is LOCALAPPDATA\tgbook
-    config = load_config(config_path)
     # With explicit config, data_root is sibling data/ directory
+    config = load_config(config_path)
     assert config.data_root == config_path.parent / "data"
+
+
+def test_default_data_root_linux_xdg_fallback(monkeypatch):
+    """On Linux, when no env vars set, defaults to ~/.local/share/tgbook."""
+    import os as _os
+    from tgbook.config import _default_data_root
+
+    if _os.name == "nt":
+        pytest.skip("Linux-specific test")
+
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
+    result = _default_data_root()
+    assert result == Path.home() / ".local" / "share" / "tgbook"
+
+
+def test_default_data_root_linux_xdg_env(monkeypatch):
+    """On Linux, XDG_DATA_HOME overrides the default."""
+    import os as _os
+    from tgbook.config import _default_data_root
+
+    if _os.name == "nt":
+        pytest.skip("Linux-specific test")
+
+    monkeypatch.setenv("XDG_DATA_HOME", "/custom/data")
+    result = _default_data_root()
+    assert result == Path("/custom/data/tgbook")
