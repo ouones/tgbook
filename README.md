@@ -153,6 +153,8 @@ tgbook --help
 
 ## 初始化教程
 
+> **前置条件**：在开始之前，你需要先完成 [Z-Library Telegram 机器人接入](docs/prerequisites-zlib-telegram.md)，包括创建个人专属 Bot 并与 Z-Library 账号绑定。
+
 ### 第一步：获取 Telegram API 凭据（api_id 和 api_hash）
 
 `api_id` 和 `api_hash` 是 Telegram 应用的唯一标识，用于通过 MTProto 协议连接 Telegram 服务器。
@@ -174,9 +176,9 @@ tgbook --help
 
 `bot_username` 是你要搜索的书库机器人的 Telegram 用户名。
 
-1. 在 Telegram 客户端中搜索该书库机器人（例如 `@daogfebot`）
+1. 在 Telegram 客户端中搜索该书库机器人（例如 `@your_book_bot`）
 2. 进入与该机器人的私聊，发送 `/start` 确认机器人可用
-3. 记住机器人的用户名（不含 `@` 符号），如 `daogfebot`
+3. 记住机器人的用户名（不含 `@` 符号），如 `your_book_bot`
 
 > **注意**：你需要先在 Telegram 客户端中手动与该机器人发起对话（至少发送一条消息），否则 tgbook 无法解析到该机器人。
 
@@ -206,7 +208,7 @@ tgbook --help
 或者使用自定义路径，通过 `--config` 参数或 `TGBOOK_CONFIG` 环境变量指定。
 
 ```toml
-bot_username = "daogfebot"           # 替换为你的书库机器人用户名
+bot_username = "your_book_bot"           # 替换为你的书库机器人用户名
 phone = "+8613800000000"             # 替换为你的 Telegram 绑定手机号
 api_id = 123456                      # 替换为 my.telegram.org 获取的 api_id
 api_hash = "your-telegram-app-hash"  # 替换为 my.telegram.org 获取的 api_hash
