@@ -37,7 +37,17 @@ pip install -e .
 > pip install -e . --no-deps
 > ```
 
-### 步骤 4：引导用户提供配置参数
+### 步骤 4：安装 tgbook 操作技能
+
+为当前 Agent 安装 tgbook 操作技能，以便后续搜索和下载时能正确处理返回结果和错误码。
+
+```bash
+skills add https://github.com/ouones/tgbook.git --skill=tgbook-operate -g -y
+```
+
+> 如果 Agent 环境不支持 `skills` 命令，可跳过此步骤。技能文件位于 `skills/tgbook-operate/SKILL.md`，可手动加载。
+
+### 步骤 5：引导用户提供配置参数
 
 你需要逐一询问用户以下参数。**一次只问一个**，用户提供后再问下一个。
 
@@ -57,7 +67,7 @@ pip install -e .
 4. 再问 `api_hash`
 5. 最后问是否需要配置代理（如用户不需要，跳过此项）
 
-### 步骤 5：写入配置文件
+### 步骤 6：写入配置文件
 
 根据用户提供的参数，写入配置文件。
 
@@ -76,7 +86,7 @@ api_hash = "abc123def456"
 # proxy = "socks5://127.0.0.1:7890"  # 用户提供了代理才写入
 ```
 
-### 步骤 6：验证安装
+### 步骤 7：验证安装
 
 ```bash
 tgbook --help
@@ -84,7 +94,7 @@ tgbook --help
 
 确认命令可正常运行，输出包含 `login`、`search`、`download` 子命令。
 
-### 步骤 7：引导用户手动登录
+### 步骤 8：引导用户手动登录
 
 tgbook 不再继续自动执行。请告知用户：
 
