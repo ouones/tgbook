@@ -92,178 +92,86 @@ tgbook 是一个**非交互式、机器可读优先**的命令行工具，专为
 }
 ```
 
-## 所需资源
+## 快速开始
 
-在开始之前，你需要准备以下资源：
+tgbook 从零到可用的完整流程分为四个阶段：
+
+### 阶段一：准备资源
+
+你需要提前准备以下资源（只需准备一次）：
 
 | # | 资源 | 用途 | 获取方式 |
 |---|------|------|----------|
 | 1 | **Telegram 账号** | 登录 Telegram，与机器人交互 | 在 Telegram 注册 |
-| 2 | **Telegram API 凭据** (`api_id` + `api_hash`) | 通过 MTProto 协议连接 Telegram 服务器 | 访问 [my.telegram.org/apps](https://my.telegram.org/apps) 创建应用获取（见[初始化教程](#初始化教程)） |
-| 3 | **个人专属 Z-Library Telegram 机器人** | 在 Telegram 中搜索和下载电子书 | 通过 @BotFather 创建后与 Z-Library 账号绑定（详见[前置条件](docs/prerequisites-zlib-telegram.md)） |
-| 4 | **一台运行设备** | 部署 tgbook 并持续运行 | Linux 服务器 / NAS / Windows / **macOS** 均可 |
+| 2 | **Telegram API 凭据** (`api_id` + `api_hash`) | 通过 MTProto 协议连接 Telegram 服务器 | 访问 [my.telegram.org/apps](https://my.telegram.org/apps) 创建应用（见下文步骤） |
+| 3 | **个人专属 Z-Library Telegram 机器人** | 在 Telegram 中搜索和下载电子书 | 通过 @BotFather 创建后与 Z-Library 账号绑定（[详细教程](docs/prerequisites-zlib-telegram.md)） |
+| 4 | **一台运行设备** | 部署 tgbook 并持续运行 | Linux / Windows / macOS / NAS 均可 |
 | 5 | **Python 3.11+** | 运行 tgbook | [python.org](https://python.org) |
-| 6 | **网络环境** | 能够访问 Telegram 服务器 | 可能需要配置代理（socks5/http） |
+| 6 | **网络环境** | 能够访问 Telegram 服务器 | 中国大陆用户可能需要配置 socks5/http 代理 |
 
-> **提示**：步骤 1-4 只需要准备一次。项目完全支持 macOS、Linux、Windows 全平台运行。
-
-## 环境要求
-
-- **Python** >= 3.11
-- **操作系统**：Linux（推荐）、Windows、**macOS**（全平台支持）
-- **网络**：能够访问 Telegram 服务器（可能需要配置代理）
-
-## 手动部署
-
-### 1. 克隆仓库
+### 阶段二：安装
 
 ```bash
-git clone <repo-url> tgbook
+git clone https://github.com/ouones/tgbook.git
 cd tgbook
-```
-
-### 2. 安装依赖
-
-```bash
 pip install -e .
 ```
 
-`tgcrypto` 需要 C 编译器才能构建。如果构建失败，pyrogram 仍可正常工作（仅速度稍慢），可跳过：
+> `tgcrypto` 需要 C 编译器。如果构建失败可跳过：`pip install kurigram==2.2.12 filelock>=3.13` 后 `pip install -e . --no-deps`
 
+验证安装：
 ```bash
-pip install kurigram==2.2.12 filelock>=3.13
-pip install -e . --no-deps
+tgbook --help
 ```
 
-### 3. 创建配置文件
+### 阶段三：配置
 
-**Linux：** 默认路径 `~/.local/share/tgbook/config.toml`（遵循 XDG 规范，可通过 `XDG_DATA_HOME` 覆盖）
+**1. 获取 API 凭据**
 
-**Windows：** 默认路径 `%LOCALAPPDATA%\tgbook\config.toml`
+浏览器打开 [my.telegram.org/apps](https://my.telegram.org/apps)，登录后创建应用，获取 `api_id`（纯数字）和 `api_hash`（字符串）。
 
-也可以使用自定义路径，通过 `--config` 参数或 `TGBOOK_CONFIG` 环境变量指定。
+**2. 确认手机号**
+
+你的 Telegram 账号绑定的手机号，格式如 `+8613800000000`。
+
+**3. 确认机器人用户名**
+
+你在[前置步骤](docs/prerequisites-zlib-telegram.md)中创建的机器人用户名（不含 `@`），且**必须已与该机器人在 Telegram 中至少对话一次**。
+
+**4. 编写配置文件**
+
+默认路径：
+- **Linux/macOS：** `~/.local/share/tgbook/config.toml`
+- **Windows：** `%LOCALAPPDATA%\tgbook\config.toml`
 
 ```toml
 bot_username = "your_book_bot"
 phone = "+8613800000000"
 api_id = 123456
 api_hash = "your-telegram-app-hash"
-# proxy = "socks5://127.0.0.1:7890"  # 可选，需要代理时取消注释
+# proxy = "socks5://127.0.0.1:7890"  # 按需取消注释
 ```
 
-### 4. 通过环境变量配置（可选）
-
-所有配置项均可用环境变量覆盖，适合容器化部署：
-
+也可通过环境变量覆盖（适合容器化）：
 ```bash
 export TGBOOK_BOT_USERNAME="your_book_bot"
 export TGBOOK_PHONE="+8613800000000"
 export TGBOOK_API_ID="123456"
 export TGBOOK_API_HASH="your-hash"
-export TGBOOK_PROXY="socks5://127.0.0.1:7890"    # 可选
-export TGBOOK_CONFIG="/path/to/config.toml"        # 可选
+export TGBOOK_PROXY="socks5://127.0.0.1:7890"
 ```
 
-### 5. 验证安装
+### 阶段四：登录与验证
 
 ```bash
-tgbook --help
+tgbook login               # 交互式登录（需人工输入验证码）
+tgbook search "三体"       # 测试搜索
+tgbook download /book_xxx  # 测试下载
 ```
 
-## 初始化教程
+登录成功后会话文件会保存到本地，后续不再需要交互。
 
-> **前置条件**：在开始之前，你需要先完成 [Z-Library Telegram 机器人接入](docs/prerequisites-zlib-telegram.md)，包括创建个人专属 Bot 并与 Z-Library 账号绑定。也可参阅 [Agent 自动部署指南](agent_setup.md) 将配置过程交由 Agent 引导。
-
-### 第一步：获取 Telegram API 凭据（api_id 和 api_hash）
-
-`api_id` 和 `api_hash` 是 Telegram 应用的唯一标识，用于通过 MTProto 协议连接 Telegram 服务器。
-
-1. 在浏览器中访问 https://my.telegram.org/apps
-2. 输入你的 Telegram 账号绑定的手机号（格式如 `+8613800000000`），点击「Next」
-3. Telegram 会向你发送一条验证码消息，在网页中输入该验证码
-4. 如果账号开启了二次验证（Two-Step Verification），按提示输入密码
-5. 登录后，点击「Create an application」或选择已有的应用
-6. 填写应用信息：
-   - **App title**：任意名称，如 `tgbook`
-   - **Short name**：任意短名，如 `tgbook`
-   - **Platform**：选择 `Desktop`
-   - **Description**：可选，留空即可
-7. 提交后，页面会显示 `App api_id`（纯数字）和 `App api_hash`（长字符串），这两个值分别对应配置中的 `api_id` 和 `api_hash`
-8. **妥善保管**这两个值，不要分享给他人
-
-### 第二步：确认 Bot 用户名（bot_username）
-
-`bot_username` 是你要搜索的书库机器人的 Telegram 用户名。
-
-1. 在 Telegram 客户端中搜索该书库机器人（例如 `@your_book_bot`）
-2. 进入与该机器人的私聊，发送 `/start` 确认机器人可用
-3. 记住机器人的用户名（不含 `@` 符号），如 `your_book_bot`
-
-> **注意**：你需要先在 Telegram 客户端中手动与该机器人发起对话（至少发送一条消息），否则 tgbook 无法解析到该机器人。
-
-### 第三步：确认手机号（phone）
-
-`phone` 是你的 Telegram 账号绑定的手机号。
-
-- 格式为国际号码，以 `+` 开头，如 `+8613800000000`
-- 该手机号必须能够接收 Telegram 的验证码短信
-- 此号码就是登录 my.telegram.org 时使用的号码
-
-### 第四步：配置代理（可选）
-
-如果你所在的网络无法直接访问 Telegram 服务器，需要配置代理。
-
-- 代理地址格式：`socks5://host:port` 或 `http://host:port`
-- 例如：`socks5://127.0.0.1:7890`（Clash/V2Ray 等本地代理）
-- 如果不需要代理，直接删除或注释掉这一行即可
-
-### 第五步：编写配置文件
-
-在默认路径创建 `config.toml`：
-
-- **Linux**：`~/.local/share/tgbook/config.toml`
-- **Windows**：`%LOCALAPPDATA%\tgbook\config.toml`
-
-或者使用自定义路径，通过 `--config` 参数或 `TGBOOK_CONFIG` 环境变量指定。
-
-```toml
-bot_username = "your_book_bot"           # 替换为你的书库机器人用户名
-phone = "+8613800000000"             # 替换为你的 Telegram 绑定手机号
-api_id = 123456                      # 替换为 my.telegram.org 获取的 api_id
-api_hash = "your-telegram-app-hash"  # 替换为 my.telegram.org 获取的 api_hash
-# proxy = "socks5://127.0.0.1:7890" # 可选，需要代理时取消注释并替换地址
-```
-
-### 第六步：交互式登录
-
-```bash
-tgbook login
-```
-
-程序会提示输入 Telegram 验证码。如果账号开启了二次验证，还需输入密码。登录成功后，会话文件会保存到本地，后续命令不再需要交互。
-
-### 第七步：测试搜索
-
-```bash
-tgbook search "三体"
-```
-
-若返回 `ok: true` 且包含 `results` 数组，说明一切正常。
-
-### 第八步：测试下载
-
-```bash
-tgbook download /book_xxx --output ./downloads
-```
-
-将 `/book_xxx` 替换为上一步搜索结果中的 `command` 字段值。
-
-### 第九步（可选）：运行测试
-
-```bash
-pip install -e ".[dev]"
-pytest tests/ -v
-```
+> 也可运行测试验证完整性：`pip install -e ".[dev]" && pytest tests/ -v`
 
 ## 项目结构
 
