@@ -88,10 +88,26 @@ tgbook 是一个**非交互式、机器可读优先**的命令行工具，专为
 }
 ```
 
+## 所需资源
+
+在开始之前，你需要准备以下资源：
+
+| # | 资源 | 用途 | 获取方式 |
+|---|------|------|----------|
+| 1 | **Telegram 账号** | 登录 Telegram，与机器人交互 | 在 Telegram 注册 |
+| 2 | **Telegram API 凭据** (`api_id` + `api_hash`) | 通过 MTProto 协议连接 Telegram 服务器 | 访问 [my.telegram.org/apps](https://my.telegram.org/apps) 创建应用获取（见[初始化教程](#初始化教程)） |
+| 3 | **Z-Library 账号** | 绑定个人专属 Telegram 机器人 | 在 [Z-Library 官网](https://singlelogin.re) 注册 |
+| 4 | **个人专属 Z-Library Telegram 机器人** | 在 Telegram 中搜索和下载电子书 | 通过 @BotFather 创建后与 Z-Library 账号绑定（详见[前置条件](docs/prerequisites-zlib-telegram.md)） |
+| 5 | **一台运行设备** | 部署 tgbook 并持续运行 | Linux 服务器 / NAS / Windows / **macOS** 均可 |
+| 6 | **Python 3.11+** | 运行 tgbook | [python.org](https://python.org) |
+| 7 | **网络环境** | 能够访问 Telegram 服务器 | 可能需要配置代理（socks5/http） |
+
+> **提示**：步骤 1-4 只需要准备一次。项目完全支持 macOS、Linux、Windows 全平台运行。
+
 ## 环境要求
 
 - **Python** >= 3.11
-- **操作系统**：Linux（推荐）、Windows、macOS
+- **操作系统**：Linux（推荐）、Windows、**macOS**（全平台支持）
 - **网络**：能够访问 Telegram 服务器（可能需要配置代理）
 
 ## 部署方式
